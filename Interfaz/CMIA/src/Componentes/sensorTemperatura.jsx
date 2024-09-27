@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
+
 function Temperatura({ onTemperatureChange }) {
     const [temperature, setTemperature] = useState(null);
     const [loading, setLoading] = useState(true);

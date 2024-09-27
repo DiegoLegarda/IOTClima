@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const mqtt = require('mqtt'); 
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
 const PORT = 3000;
@@ -82,6 +84,55 @@ app.get('/api/humidity', async (req, res) => {
     } catch (err) {
         console.error('Error al obtener la humedad:', err);
         res.status(500).json({ message: 'Error al obtener la humedad' });
+    }
+});
+
+// Ruta para obtener todo el histórico de lecturas
+app.get('/api/readings', async (req, res) => {
+    try {
+        const readings = await Reading.find().sort({ timestamp: -1 }); // Obtener todas las lecturas, ordenadas por timestamp
+        res.json(readings);
+    } catch (err) {
+        console.error('Error al obtener lecturas históricas:', err);
+        res.status(500).json({ message: 'Error al obtener lecturas históricas' });
+    }
+});
+
+// Ruta para exportar datos a CSV
+app.get('/api/export-csv', async (req, res) => {
+    try {
+        const readings = await Reading.find({});
+        const csvFilePath = path.join(__dirname, 'readings.csv');
+        
+        // Crear el contenido CSV
+        const header = 'Temperature,Humidity,Timestamp\n';
+        const rows = readings.map(reading => 
+            `${reading.temperature},${reading.humidity},${reading.timestamp.toISOString()}`
+        ).join('\n');
+
+        // Escribir el archivo CSV
+        fs.writeFileSync(csvFilePath, header + rows);
+
+        // Enviar el archivo CSV
+        res.download(csvFilePath, 'readings.csv', (err) => {
+            if (err) {
+                console.error('Error al descargar el archivo CSV:', err);
+            }
+        });
+    } catch (err) {
+        console.error('Error al exportar CSV:', err);
+        res.status(500).json({ message: 'Error al exportar CSV' });
+    }
+});
+
+// Ruta para reiniciar los datos en la base de datos
+app.delete('/api/reset-data', async (req, res) => {
+    try {
+        await Reading.deleteMany({});
+        res.status(200).json({ message: 'Datos reiniciados con éxito' });
+    } catch (err) {
+        console.error('Error al reiniciar los datos:', err);
+        res.status(500).json({ message: 'Error al reiniciar los datos' });
     }
 });
 

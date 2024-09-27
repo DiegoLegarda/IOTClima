@@ -1,0 +1,48 @@
+.button-container {
+    margin: 20px 0;
+}
+
+.button-container button {
+    padding: 10px 15px;
+    font-size: 16px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.button-container button:hover {
+    background-color: #0056b3;
+}
+
+
+.card {
+    padding: 2em;
+  }
+  
+  .read-the-docs {
+    color: #e42929;
+  }
+  
+  .dashboard-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .dashboard-cards {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+  }
+  
+  .card {
+    background-color: #1b0bf3;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    width: 45%; 
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
