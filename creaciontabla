@@ -1,0 +1,6 @@
+CREATE TABLE readings (
+    id SERIAL PRIMARY KEY,
+    temperature NUMERIC,
+    humidity NUMERIC,
+    timestamp TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);

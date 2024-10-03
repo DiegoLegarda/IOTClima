@@ -5,6 +5,7 @@ import Iconos from './iconos';
 import Historico from './historico';
 import HistoricoGrap from './historicoGrap';
 import axios from 'axios';
+import './dashboard.css'
 
 
 
@@ -46,11 +47,12 @@ function Dashboard() {
     return (
         <div className="dashboard-container">
             <h1>Dashboard de Monitoreo</h1>
-            <div className="dashboard-cards">
-                <div className="card">
+            <div className="CajaGrande">
+                <div className="CajaPeque">
                     <Temperature onTemperatureChange={setTemperature} />
                 </div>
-                <div className="card">
+                
+                <div className="CajaPeque">
                     <Humidity onHumidityChange={setHumidity} />
                 </div>
             </div>
