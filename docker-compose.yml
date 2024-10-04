@@ -27,7 +27,7 @@ services:
     #   - servidor  
 
   mongodb:
-    image: arm64v8/mongo
+    image: mongo
     container_name: mongodb
     ports:
       - "27017:27017"
