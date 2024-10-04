@@ -1,0 +1,43 @@
+version: '3'
+services:
+  backend:
+    build: ./servidor
+    container_name: servidor
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./servidor:/app
+    command: npm start
+    environment:
+      MONGO_URI: mongodb://root:example@mongodb:27017
+      MQTT_BROKER_URL: mqtt://192.168.101.77:1883
+    depends_on:
+      - mongodb
+
+  frontend:
+    build: ./Interfaz/CMIA
+    container_name: frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./Interfaz/CMIA:/app
+    environment:
+      - VITE_BACKEND_URL=http://servidor:3000/api
+    command: npm run dev
+    # depends_on:
+    #   - servidor  
+
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - mongoData:/data/db  
+
+
+volumes:
+  mongoData: {}  
