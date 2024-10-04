@@ -1,4 +1,3 @@
-version: '3'
 services:
   backend:
     build: ./servidor
@@ -28,7 +27,7 @@ services:
     #   - servidor  
 
   mongodb:
-    image: mongo
+    image: arm64v8/mongo
     container_name: mongodb
     ports:
       - "27017:27017"
