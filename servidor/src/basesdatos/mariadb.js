@@ -13,6 +13,7 @@ const pool = mariadb.createPool({
 const conectMariaDB = async () => {
   try {
     const connection = await pool.getConnection();
+    console.log(`Conexiones activas: ${pool.activeConnections()}, Conexiones inactivas: ${pool.idleConnections()}`);
     console.log('Conectado a MariaDB');
     return connection;
   } catch (error) {

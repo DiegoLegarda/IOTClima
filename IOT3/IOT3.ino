@@ -1,110 +1,25 @@
-#include <WiFi.h>
-#include <PubSubClient.h>
-#include <DHT.h>
-
-#define LED_BUILTIN 2
-#define DHTPIN 23       
-#define DHTTYPE DHT11   
-
-
-DHT dht(DHTPIN, DHTTYPE);
-
-// Datos de la red WiFi
-const char* ssid = "Legarda_Lujan";      
-const char* password = "AnaIsa19";   
-
-// Datos del servidor MQTT
-const char* mqtt_server = "192.168.101.79";  
-const int mqtt_port = 1883;                     
-const char* mqtt_topic = "esp32/dht11";         
-
-
-WiFiClient espClient;
-PubSubClient client(espClient);
-
-
-void setup_wifi() {
-  delay(10);
-  Serial.println();
-  Serial.print("Conectando a ");
-  Serial.println(ssid);
-
-  // Conectarse a la red WiFi
-  WiFi.begin(ssid, password);
-
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
-    Serial.print(".");
-  }
-
-  Serial.println("");
-  Serial.println("WiFi conectado");
-  Serial.println("Dirección IP: ");
-  Serial.println(WiFi.localIP());
-}
-
-// Función para conectarse al broker MQTT
-void reconnect() {
- 
-  while (!client.connected()) {
-    Serial.print("Conectando al broker MQTT...");
-    // Intentar conectarse
-    if (client.connect("ESP32Client")) {
-      digitalWrite(LED_BUILTIN, HIGH);
-      Serial.println("Conectado");
-    } else {
-      Serial.print("Error, rc=");
-      Serial.print(client.state());
-      Serial.println(" Intentando de nuevo en 5 segundos");
-      digitalWrite(LED_BUILTIN, LOW);
-      delay(5000);
-    }
-  }
-}
+const int led1Pin = 4;  // Pin donde conectas el primer LED
+const int led1Channel = 0;  // Canal PWM para LED 1
+const int pwmFreq = 5000;   // Frecuencia de PWM (5kHz)
+const int pwmResolution = 8;  // Resolución de PWM (0-255)
 
 void setup() {
-
-  Serial.begin(115200);  
-  pinMode(LED_BUILTIN, OUTPUT);
-  dht.begin(); 
-  digitalWrite(LED_BUILTIN, HIGH);
-  setup_wifi();
+  // Inicializar el puerto serie
+  Serial.begin(115200);
   
-  client.setServer(mqtt_server, mqtt_port);
-  digitalWrite(LED_BUILTIN, LOW);
+  // Configurar PWM para el LED
+  ledcSetup(led1Channel, pwmFreq, pwmResolution);
+  ledcAttachPin(led1Pin, led1Channel);
 }
 
 void loop() {
-  if (!client.connected()) {
-    reconnect();
+  // Cambiar el brillo del LED (valor entre 0 y 255)
+  for (int dutyCycle = 0; dutyCycle <= 255; dutyCycle++) {
+    ledcWrite(led1Channel, dutyCycle);
+    delay(15);
   }
-  client.loop();
-
-  // Leer la temperatura y humedad
-  float humedad = dht.readHumidity();
-  float temperatura = dht.readTemperature();
-Serial.print("Humedad");
-Serial.print(humedad);
-Serial.print("| Temperatura");
-Serial.print(temperatura);
-
-  // Comprobar si la lectura falló
-  if (isnan(humedad) || isnan(temperatura)) {
-    Serial.println("Error al leer del sensor DHT11");
-    return;
+  for (int dutyCycle = 255; dutyCycle >= 0; dutyCycle--) {
+    ledcWrite(led1Channel, dutyCycle);
+    delay(15);
   }
-
- 
-  String payload = "{\"temperature\": ";
-  payload += String(temperatura);
-  payload += ", \"humidity\": ";
-  payload += String(humedad);
-  payload += "}";
-
-
-  Serial.print("Publicando mensaje: ");
-  Serial.println(payload);
-  client.publish(mqtt_topic, payload.c_str());
-
-  delay(10000);
 }
