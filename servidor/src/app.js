@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const rutasMongoDB = require('./rutas/rutasMDB');
 const rutasMariaDB = require('./rutas/rutasMDB');
+const rutasControlLeds = require('./rutas/rutasControlLeds');
 const conectMDB=require('./basesdatos/mongodb');
 const conectMariaDB=require('./basesdatos/mariadb');
 const { iniciarMQTT } = require('./mqtt/clienteMqtt');
@@ -28,6 +29,7 @@ if (process.env.USE_MONGODB === 'true') {
   // Iniciar el cliente MQTT si al menos una base de datos está habilitada
   if (process.env.USE_MONGODB === 'true' || process.env.USE_MARIADB === 'true') {
     iniciarMQTT();
+    app.use('/api/control',rutasControlLeds);
   }
 
 // Rutas
