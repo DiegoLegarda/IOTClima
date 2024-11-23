@@ -4,15 +4,16 @@ import Humidity from './sensorHumedad';
 import Iconos from './iconos';
 import Historico from './historico';
 import HistoricoGrap from './historicoGrap';
+import Estadisticos from './Estadisticos.jsx';
 import axios from 'axios';
 import './dashboard.css'
 
 
 
 function Dashboard() {
-    const [temperature, setTemperature] = useState(0); // Estado para la temperatura
-    const [humidity, setHumidity] = useState(0);       // Estado para la humedad
-    const [showGraph, setShowGraph] = useState(true);  // Estado para controlar la visibilidad de la gráfica
+    const [temperature, setTemperature] = useState(0); 
+    const [humidity, setHumidity] = useState(0);       
+    const [showGraph, setShowGraph] = useState(true);  
 
     const toggleView = () => {
         setShowGraph(!showGraph); // Cambiar entre gráfica y tabla
@@ -20,8 +21,8 @@ function Dashboard() {
 
     const handleExportCSV = async () => {
         try {
-            const response = await axios.get('http://localhost:3000/api/export-csv', {
-                responseType: 'blob', // Importante para manejar archivos
+            const response = await axios.get('http://localhost:3002/api/mariaDB/export-csv', {
+                responseType: 'blob', 
             });
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
@@ -37,7 +38,7 @@ function Dashboard() {
 
     const handleResetData = async () => {
         try {
-            await axios.delete('http://localhost:3000/api/reset-data');
+            await axios.delete('http://localhost:3002/api/mariaDB/reset-data');
             alert('Datos reiniciados con éxito');
         } catch (error) {
             console.error('Error al reiniciar los datos:', error);
@@ -57,7 +58,7 @@ function Dashboard() {
                 </div>
             </div>
             <Iconos temperature={temperature} humidity={humidity} />
-
+            <div><Estadisticos></Estadisticos></div>
             <div className="button-container">
                 <button onClick={toggleView}>
                     {showGraph ? 'Ver Histórico' : 'Ver Gráfica'}

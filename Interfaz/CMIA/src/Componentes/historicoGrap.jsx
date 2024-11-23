@@ -13,7 +13,7 @@ const HistoricoGrap = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get('http://localhost:3000/api/readings');
+                const response = await axios.get('http://localhost:3002/api/mariaDB/historico');
                 const readings = response.data;
 
                 const temperatureData = readings.map(reading => ({

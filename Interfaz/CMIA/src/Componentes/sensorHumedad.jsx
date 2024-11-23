@@ -8,7 +8,7 @@ function Humedad({ onHumidityChange }){
 
     const fetchHumidity = async () => {
         try {
-            const response = await axios.get('http://localhost:3000/api/humidity');
+            const response = await axios.get('http://localhost:3002/api/mariaDB/humedad');
             console.log('Datos de humedad obtenidos:', response.data);
             setHumidity(response.data.humidity);
             setLoading(false);

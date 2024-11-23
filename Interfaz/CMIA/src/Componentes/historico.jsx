@@ -8,7 +8,7 @@ const Historico = () => {
     useEffect(() => {
         const fetchReadings = async () => {
             try {
-                const response = await fetch('http://localhost:3000/api/readings');
+                const response = await fetch('http://localhost:3002/api/mariaDB/historico');
                 if (!response.ok) {
                     throw new Error('Error al obtener lecturas');
                 }

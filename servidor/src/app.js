@@ -1,7 +1,8 @@
 const express = require('express');
 const cors = require('cors');
+const axios = require("axios");
 const rutasMongoDB = require('./rutas/rutasMDB');
-const rutasMariaDB = require('./rutas/rutasMDB');
+const rutasMariaDB = require('./rutas/rutasMariaDB');
 const rutasControlLeds = require('./rutas/rutasControlLeds');
 const conectMDB=require('./basesdatos/mongodb');
 const conectMariaDB=require('./basesdatos/mariadb');
@@ -41,7 +42,16 @@ if (process.env.USE_MONGODB === 'true') {
     app.use('/api/mariaDB', rutasMariaDB);     
   }
 
-
+//conexion con el servidor de python
+app.get("/api/estadisticos", async (req, res) => {
+  try {
+      const response = await axios.get("http://localhost:5000/api/sensor_stats");
+      res.json(response.data);
+  } catch (error) {
+      console.error("Error fetching data from Flask API:", error.message);
+      res.status(500).json({ error: "Error fetching data from Python API" });
+  }
+});
 
 app.listen(PORT, () => {
     console.log(`Servidor escuchando en http://localhost:${PORT}`);

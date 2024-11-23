@@ -9,7 +9,7 @@ function Temperatura({ onTemperatureChange }) {
 
     const fetchTemperature = async () => {
         try {
-            const response = await axios.get('http://localhost:3000/api/temperature');
+            const response = await axios.get('http://localhost:3002/api/mariaDB/temperatura');
             console.log('Datos de temperatura obtenidos:', response.data);
             setTemperature(response.data.temperature);
             setLoading(false);

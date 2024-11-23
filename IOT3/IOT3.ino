@@ -4,6 +4,7 @@
 #include <ArduinoJson.h>
 #include "config.h"  // Archivo con credenciales de WiFi y MQTT
 #define LED_BUILTIN 2
+#define PIN_HUMEDAD_SUELO 34
 
 // Pines para LEDs controlados por PWM
 const int led1Pin = 12;  
@@ -32,7 +33,7 @@ void setup_wifi() {
   Serial.println();
   Serial.print("Conectando a ");
   Serial.println(ssid);
-
+  WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
 
   while (WiFi.status() != WL_CONNECTED) {
@@ -65,10 +66,13 @@ void callback(char* topic, byte* payload, unsigned int length) {
 
     float temperature = doc["temperature"];
     float humidity = doc["humidity"];
+    float soil_moisture=doc["soil_moisture"];
     Serial.print("Temperatura: ");
     Serial.println(temperature);
     Serial.print("Humedad: ");
     Serial.println(humidity);
+    Serial.print("Humedad suelo: ");
+    Serial.println(soil_moisture);
 
   } else if (String(topic) == "esp32/ledControl") {
      DynamicJsonDocument doc(200);
@@ -109,16 +113,23 @@ void reconnect() {
 void publishData() {
   float humedad = dht.readHumidity();
   float temperatura = dht.readTemperature();
+  int valorHumedad = analogRead(PIN_HUMEDAD_SUELO);
+  float porcentajeHumedad = map(valorHumedad, 0, 4095, 0, 100);
 
   if (isnan(humedad) || isnan(temperatura)) {
     Serial.println("Error al leer del sensor DHT11");
     return;
   }
+  if(isnan(valorHumedad)){
+    Serial.println("Sensor de Humedad del suelo sin datos");
+    }
 
   String payload = "{\"temperature\": ";
   payload += String(temperatura);
   payload += ", \"humidity\": ";
   payload += String(humedad);
+  payload += ", \"soil_moisture\": ";
+  payload += String(porcentajeHumedad);
   payload += "}";
 
   Serial.print("Publicando mensaje: ");
@@ -164,4 +175,3 @@ void loop() {
     lastPublishTime = currentMillis;
   }
 }
-
